@@ -19,11 +19,26 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
+        createPersonTable(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion == 1 && newVersion == 2) {
+            createPersonTable(db);
+        }
+    }
 
+    private void createPersonTable(SQLiteDatabase db) {
+        String query = "CREATE TABLE 'person' (" +
+                "'personId' INTEGER PRIMARY KEY AUTOINCREMENT  NOT NULL , " +
+                "'firstname' TEXT, " +
+                "'lastname' TEXT, " +
+                "'gender' INTEGER, " +
+                "'email' TEXT UNIQUE, " +
+                "'imageUrl' TEXT, " +
+                "'creationTime' INTEGER" +
+                ")";
+        db.execSQL(query);
     }
 }
