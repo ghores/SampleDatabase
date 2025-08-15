@@ -1,5 +1,7 @@
 package com.example.sampledatabase.activity;
 
+import android.annotation.SuppressLint;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +18,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        readData();
+    }
+
+    @SuppressLint("Range")
+    private void readData() {
+        Cursor cursor = G.database.rawQuery("SELECT * FROM person", null);
+        while (cursor.moveToNext()) {
+            int personId = cursor.getInt(cursor.getColumnIndex("personId"));
+            String firstname = cursor.getString(cursor.getColumnIndex("firstname"));
+            String lastname = cursor.getString(cursor.getColumnIndex("lastname"));
+            int gender = cursor.getInt(cursor.getColumnIndex("gender"));
+            String email = cursor.getString(cursor.getColumnIndex("email"));
+            Log.i("LOG", "personId: " + personId + ", firstname: " + firstname + ", lastname: " + lastname + ", gender: " + gender + ", email: " + email);
+        }
+        cursor.close();
+    }
+
+    private void modifyData() {
         try {
             for (int i = 0; i < 10; i++) {
                 String firstname = "FirstName" + i;
