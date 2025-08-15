@@ -1,48 +1,35 @@
 package com.example.sampledatabase.activity;
 
-import android.Manifest;
-import android.content.DialogInterface;
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
+import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sampledatabase.R;
-import com.example.sampledatabase.helper.RequestHelper;
 import com.example.sampledatabase.main.G;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        requestForWriteSDCardPermission();
-    }
 
-    private void requestForWriteSDCardPermission() {
-        RequestHelper requestHelper = new RequestHelper(this);
-        requestHelper.request(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                () -> G.app.createAppDirectories(),
-                () -> new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("Permission Required")
-                        .setMessage("Writing to SDCARD required for this app.")
-                        .setPositiveButton("Ask me again", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                requestForWriteSDCardPermission();
-                            }
-                        })
-                        .create()
-                        .show(),
-                () -> G.app.createOrOpenDatabase());
-    }
+        try {
+            for (int i = 0; i < 10; i++) {
+                String firstname = "FirstName" + i;
+                String lastname = "LastName" + i;
+                int gender = 0;
+                String email = "email" + i + "@c.com";
+                String query = "INSERT INTO 'person' ('firstname','lastname','gender','email') VALUES ('" + firstname + "', '" + lastname + "', " + gender + " , '" + email + "')";
+                G.database.execSQL(query);
+            }
+        } catch (SQLiteConstraintException e) {
+            Log.e("LOG", e.getMessage());
+        }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        RequestHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        G.database.execSQL("DELETE FROM person WHERE personId=5");
+        G.database.execSQL("UPDATE person SET firstname='behnam', lastname='aghajani', email='uncocoder@gmail.com' WHERE personId=17");
     }
 }
